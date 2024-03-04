@@ -126,6 +126,24 @@
                         未选择串口
                     </div>
                 </div>
+
+                <div id="serial-put-file" class="mt-2">
+                    <input id="choose-file" type="file"></input>
+                    <!-- <div class="file-box">
+                        <strong>Send a file</strong>
+                        <input type="file" id="put-file-select" />
+                        <div id="put-file-list"></div>
+                        <input type="button" value="Send to device" id="put-file-button" onclick="put_file(); return false;" />
+                      </div> -->
+                </div>
+
+                <div id="serial-get-file" class="mt-2">
+                    <strong>Get a file</strong>
+                    <input type="text" name="get_filename" id="get_filename" value="" size="13" />
+                    <input type="button" value="Get from device" onclick="get_file(); return false;" />
+                </div>
+
+                
             </div>
             <button class="toggle-button float-end" title="隐藏/打开边栏">
                 <i class="bi bi-chevron-compact-left"></i>

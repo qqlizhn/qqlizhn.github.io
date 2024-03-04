@@ -788,4 +788,54 @@
 			modalNewName.hide()
 		}
 	}
+
+
+		//写串口数据
+	async function writeFileData(data) {
+		if (!serialPort || !serialPort.writable) {
+			addLogErr('请先打开串口再发送数据')
+			return
+		}
+		const writer = serialPort.writable.getWriter()
+		//if (toolOptions.addCRLF) {
+		data = new Uint8Array([...data, 0x0d, 0x0a])
+		//}
+		await writer.write(data)
+		writer.releaseLock()
+		addLog(data, false)
+	}
+
+	const delay = (delayInms) => {
+		return new Promise(resolve => setTimeout(resolve, delayInms));
+	  };
+
+	document.getElementById('choose-file').onchange = e => {
+		var file = e.target.files[0];
+		var reader = new FileReader();
+		reader.readAsText(file, "utf-8");
+		reader.onload = readerEvent => {
+
+			(async () => {
+				var content = readerEvent.target.result;
+			console.log(content);
+			// writeFileData(new TextEncoder().encode("\x03\x03\x01\x04_fh = open('/" + file.name + "', 'wb')\x04"));
+			await writeFileData(new TextEncoder().encode("_fh = open('/" + file.name + "', 'wb')"));
+			for (var i=0; i<content.length; i+=50) {
+			var cmd = "_fh.write(bytes([";
+			for (var j=0; j<50 && (i+j)<content.length; j++) {
+				cmd += content.charCodeAt(i+j) + ",";
+			}
+			cmd += "]))";
+			//cmd += "]))\x04";
+				await writeFileData(new TextEncoder().encode(cmd));
+				await delay(100)
+			}
+			await writeFileData(new TextEncoder().encode('_fh.flush()'));
+			// writeFileData(new TextEncoder().encode('_fh.flush()\x04'));
+			await writeFileData(new TextEncoder().encode('_fh.close()'));
+			// writeFileData(new TextEncoder().encode('_fh.close()\x04\x02\x03\x03\x04'));
+			})();
+		}
+		}
+
 })()
