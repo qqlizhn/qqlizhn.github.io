@@ -749,7 +749,10 @@
 			window.URL.revokeObjectURL(link.href)
 		}
 	}
-
+	// import * as bootstrap from 'bootstrap';
+	// window.bootstrap = bootstrap;
+	// window.bootstrap = require('bootstrap');
+	// window.bootstrap = require('bootstrap/dist/js/bootstrap.bundle.js');
 	//弹窗
 	const modalTip = new bootstrap.Modal('#model-tip')
 	function showMsg(msg, title = 'Web Serial') {

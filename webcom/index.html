@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Serial Debug-浏览器串口调试工具</title>
 
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
     <!--核心css文件 bootstrap.min.css-->
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
     <!--核心css文件 bootstrap.css-->
@@ -15,6 +17,8 @@
     <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
     <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.1/js/bootstrap.bundle.min.js"></script>
     
 
 
@@ -31,6 +35,13 @@
             var header = document.querySelector('.bd-header');
             header.remove();
             document.documentElement.style.setProperty('--top-height', '0px');
+        }
+
+        hideTools = function () {
+            console.log('hideTools');
+            var header = document.getElementsByClassName('collapse show p-1 float-start overflow-hidden');
+            header.style.display = (header.style.display=="block") ? "none" : "block";
+            //document.documentElement.style.setProperty('--top-height', '0px');
         }
     </script>
     <script>
@@ -233,7 +244,7 @@
 
         <!--右侧串口工具-->
         <div id="serial-tools" class="col-auto m-0 bg-light sidebar">
-            <button class="toggle-button float-start" title="隐藏/打开边栏">
+            <button class="toggle-button float-start" title="隐藏/打开边栏" οnclick="hideTools()">
                 <i class="bi bi-chevron-compact-right"></i>
             </button>
             <div class="collapse show p-1 float-start overflow-hidden" style="width:428px">
