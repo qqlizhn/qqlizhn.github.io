@@ -4,8 +4,8 @@
 <head>
     <title>Python Editor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/fonts.css">
-    <link rel="stylesheet" href="/xterm/css/xterm.css" />
+    <link rel="stylesheet" href="./fonts.css">
+    <link rel="stylesheet" href="./xterm/css/xterm.css" />
     <style type="text/css" media="screen">
         body,
         html {
@@ -226,8 +226,8 @@
                 </div>
 
                 <div class="bottom">
-                    <img id="runSwitch" onclick="switchRun()" class="active" src="python.svg">
-                    <img id="consoleSwitch" onclick="switchConsole()" src="terminal.svg">
+                    <img id="runSwitch" onclick="switchRun()" class="active" src="./python.svg">
+                    <img id="consoleSwitch" onclick="switchConsole()" src="./terminal.svg">
                 </div>
             </div>
 
@@ -241,10 +241,10 @@
                             <span class="title">Run</span>
                         </div>
                         <div class="right">
-                            <img title="reload interpreter" id="reloadBtn" onclick="reload()" src="reload.svg">
-                            <img title="run" id="runBtn" onclick="run()" src="run.svg">
+                            <img title="reload interpreter" id="reloadBtn" onclick="reload()" src="./reload.svg">
+                            <img title="run" id="runBtn" onclick="run()" src="./run.svg">
                             <img title="Switch layout" id="vertiHoriSwitch" onclick="toggleVertiHori()"
-                                src="/right.svg">
+                                src="./right.svg">
                         </div>
                     </div>
                     <textarea id="output" disabled>Initializing...</textarea>
@@ -260,9 +260,9 @@
                                 <option value="editor">Current Code</option>
                                 <option value="console">Console</option>
                             </select>
-                            <img title="reload interpreter" id="reloadBtn" onclick="termReload()" src="reload.svg">
+                            <img title="reload interpreter" id="reloadBtn" onclick="termReload()" src="./reload.svg">
                             <img title="Switch layout" id="vertiHoriSwitch" onclick="toggleVertiHori()"
-                                src="/right.svg">
+                                src="./right.svg">
                         </div>
                     </div>
                     <textarea style="position: absolute;;height: 1rem; width: 50%;" id="output"
@@ -273,7 +273,7 @@
         </div>
     </div>
 
-    <script src="/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="./ace/ace.js" type="text/javascript" charset="utf-8"></script>
 
     <script>
         const outputWinDOM = document.getElementById("outputWin");
@@ -318,11 +318,11 @@
         }
 
         var pythonRuntimes = [];
-        pythonRuntimes.push(new Worker("/py-worker.js"));
+        pythonRuntimes.push(new Worker("./py-worker.js"));
 
         function getMainPy() {
             if (pythonRuntimes[0] === undefined) {
-                pythonRuntimes[0] = new Worker("/py-worker.js");
+                pythonRuntimes[0] = new Worker("./py-worker.js");
             }
             return pythonRuntimes[0]
         }
@@ -409,7 +409,7 @@ print(f'''Python {sys.version}''')`)
             }
         }
     </script>
-    <script src="/xterm/lib/xterm.js"></script>
+    <script src="./xterm/lib/xterm.js"></script>
     <script>
         var lightTheme = {
             foreground: '#000000',

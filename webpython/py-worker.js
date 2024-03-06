@@ -7,7 +7,7 @@ let pyodide = undefined;
 async function init(resolve, reject) {
     try {
         if (pyodide === undefined) {
-            importScripts("/pyodide/pyodide.js")
+            importScripts("./pyodide/pyodide.js")
             pyodide = await loadPyodide();
         }
         resolve("initialized");
