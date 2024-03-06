@@ -9,6 +9,19 @@ async function init(resolve, reject) {
         if (pyodide === undefined) {
             importScripts("./pyodide/pyodide.js")
             pyodide = await loadPyodide();
+            // Load Micropip so we can load the importers
+            await pyodide.loadPackage("micropip");
+
+            // Load all our website pages uses the origin of this function
+            await pyodide.runPythonAsync(
+                `
+                import micropip
+                await micropip.install(
+                    ["numpy", "Pillow","requests" ],
+                    deps=False
+                )
+                `
+            );
         }
         resolve("initialized");
     } catch (err) {
