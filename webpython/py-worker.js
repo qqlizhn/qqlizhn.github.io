@@ -13,13 +13,10 @@ async function init(resolve, reject) {
             await pyodide.loadPackage("micropip");
 
             // Load all our website pages uses the origin of this function
-            await pyodide.runPythonAsync(
+            pyodide.runPythonAsync(
                 `
                 import micropip
-                await micropip.install(
-                    ["numpy", "Pillow","requests" ],
-                    deps=False
-                )
+                await micropip.install("requests")
                 `
             );
         }
