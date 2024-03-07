@@ -20,6 +20,9 @@ body {
 #serial-logs {
 	overflow-y: scroll;
 	white-space: pre-wrap;
+	max-width: 100%;
+	
+	overflow-x: scroll;
 }
 #serial-options,
 #serial-tools {

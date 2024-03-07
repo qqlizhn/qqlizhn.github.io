@@ -690,7 +690,7 @@
 			newmsg += dataAscii + '<br/>'
 		}
 		let time = toolOptions.showTime ? formatDate(new Date()) + '&nbsp;' : ''
-		const template = '<div><span class="' + classname + '">' + time + form + '</span><br>' + newmsg + '</div>'
+		const template = '<div style="word-wrap: break-word; word-break:break-word;"><span class="' + classname + '">' + time + form + '</span><br>' + newmsg + '</div>'
 		let tempNode = document.createElement('div')
 		tempNode.innerHTML = template
 		serialLogs.append(tempNode)
