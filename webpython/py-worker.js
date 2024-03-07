@@ -9,16 +9,16 @@ async function init(resolve, reject) {
         if (pyodide === undefined) {
             importScripts("./pyodide/pyodide.js")
             pyodide = await loadPyodide();
-            // Load Micropip so we can load the importers
-            await pyodide.loadPackage("micropip");
+            // // Load Micropip so we can load the importers
+            // await pyodide.loadPackage("micropip");
 
-            // Load all our website pages uses the origin of this function
-            pyodide.runPythonAsync(
-                `
-                import micropip
-                await micropip.install("requests")
-                `
-            );
+            // // Load all our website pages uses the origin of this function
+            // pyodide.runPythonAsync(
+            //     `
+            //     import micropip
+            //     await micropip.install("requests")
+            //     `
+            // );
         }
         resolve("initialized");
     } catch (err) {
