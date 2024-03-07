@@ -800,9 +800,9 @@
 			return
 		}
 		const writer = serialPort.writable.getWriter()
-		//if (toolOptions.addCRLF) {
+		// if (toolOptions.addCRLF) {
 		data = new Uint8Array([...data, 0x0d, 0x0a])
-		//}
+		// }
 		await writer.write(data)
 		writer.releaseLock()
 		addLog(data, false)
@@ -815,28 +815,37 @@
 	document.getElementById('choose-file').onchange = e => {
 		var file = e.target.files[0];
 		var reader = new FileReader();
-		reader.readAsText(file, "utf-8");
+		// reader.readAsText(file, "utf-8");
+		reader.readAsArrayBuffer(file)
 		reader.onload = readerEvent => {
-
+			// var arrayBuffer = reader.result
+			// var bytes = new Uint8Array(arrayBuffer);
 			(async () => {
 				var content = readerEvent.target.result;
-			console.log(content);
-			// writeFileData(new TextEncoder().encode("\x03\x03\x01\x04_fh = open('/" + file.name + "', 'wb')\x04"));
-			await writeFileData(new TextEncoder().encode("_fh = open('/" + file.name + "', 'wb')"));
-			for (var i=0; i<content.length; i+=50) {
-			var cmd = "_fh.write(bytes([";
-			for (var j=0; j<50 && (i+j)<content.length; j++) {
-				cmd += content.charCodeAt(i+j) + ",";
-			}
-			cmd += "]))";
-			//cmd += "]))\x04";
-				await writeFileData(new TextEncoder().encode(cmd));
-				await delay(100)
-			}
-			await writeFileData(new TextEncoder().encode('_fh.flush()'));
-			// writeFileData(new TextEncoder().encode('_fh.flush()\x04'));
-			await writeFileData(new TextEncoder().encode('_fh.close()'));
-			// writeFileData(new TextEncoder().encode('_fh.close()\x04\x02\x03\x03\x04'));
+				var bytes = new Uint8Array(content);
+				console.log(content);
+				var encode = new TextEncoder();
+				//await writeFileData(new TextEncoder().encode("\x03\x03\x01\x04_fh = open('/" + file.name + "', 'wb')\x04"));
+				await writeFileData(encode.encode("_fh = open('/" + file.name + "', 'wb')"));
+				for (var i=0; i<bytes.length; i+=50) {
+				var cmd = "_fh.write(bytes([";
+				for (var j=0; j<50 && (i+j)<bytes.length; j++) {
+					cmd+=bytes[i+j]+",";
+					// var bytes = encode.encode(content.charCodeAt(i+j));
+					// for(var k=0; k<bytes.length; k++){
+					// 	cmd+=bytes[k]+",";
+					// }
+					// cmd += content.charCodeAt(i+j) + ",";
+				}
+				cmd += "]))";
+				//cmd += "]))\x04";
+					await writeFileData(encode.encode(cmd));
+					await delay(100)
+				}
+				await writeFileData(encode.encode('_fh.flush()'));
+				//await writeFileData(new TextEncoder().encode('_fh.flush()\x04'));
+				await writeFileData(encode.encode('_fh.close()'));
+				//await writeFileData(new TextEncoder().encode('_fh.close()\x04\x02\x03\x03\x04'));
 			})();
 		}
 		}
