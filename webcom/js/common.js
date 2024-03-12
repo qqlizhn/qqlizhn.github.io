@@ -578,6 +578,7 @@
 	}
 	//串口数据收发
 	async function send() {
+		beginReadFile = false
 		let content = document.getElementById('serial-send-content').value
 		if (!content) {
 			addLogErr('发送内容为空')
@@ -625,6 +626,17 @@
 		addLog(data, false)
 	}
 
+	function findByteArrayInByteArray(bigArray, smallArray) {
+		for(let i = 0; i < bigArray.length; i++) {
+			if(bigArray.slice(i, i + smallArray.length).every((val, index) => val === smallArray[index])) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	let beginReadFile = false;
+	let readFileData = []
 	//读串口数据
 	async function readData() {
 		while (serialOpen && serialPort.readable) {
@@ -635,7 +647,72 @@
 					if (done) {
 						break
 					}
-					dataReceived(value)
+					if(beginReadFile)
+					{
+						//addLogErr('add receive data'+value)
+						readFileData.push(...value)
+						if(readFileData.length>9 &&
+							readFileData[readFileData.length-1] == 0x20 && 
+							readFileData[readFileData.length-2] == 0x3e && 
+							readFileData[readFileData.length-3] == 0x3e && 
+							readFileData[readFileData.length-4] == 0x3e && 
+							readFileData[readFileData.length-5] == 0x0a && 
+							readFileData[readFileData.length-6] == 0x0d && 
+							readFileData[readFileData.length-7] == 0x64 && 
+							readFileData[readFileData.length-8] == 0x6e && 
+							readFileData[readFileData.length-9] == 0x65
+							)
+						{
+							//addLogErr('done'+readFileData)
+							binBegin = findByteArrayInByteArray(readFileData,new Uint8Array([0x0d, 0x0a,0x62,0x27]))
+							if(binBegin != -1)
+							{
+								//addLogErr('frist'+binBegin)
+								let clearFiledata = []
+								let startIndex = binBegin+2
+								for(let i=binBegin; i<readFileData.length-9;i++)
+								{
+									if(readFileData[i] == 0x27 && readFileData[i+1] == 0x0d && readFileData[i+2] == 0x0a)
+									{ 
+										//addLogErr('findEnd'+i)
+										clearFiledata.push(...readFileData.slice(startIndex+2,i))
+										//addLogErr('add '+clearFiledata)
+										startIndex = findByteArrayInByteArray(readFileData.slice(i,readFileData.length),new Uint8Array([0x62, 0x27]))
+										if(startIndex == -1)
+										{
+											//addLogErr('notstart'+i)
+											break;
+										}else
+										{
+											//addLogErr('findNextStart'+i)
+											i = i+startIndex
+											startIndex = i
+										}
+									}
+								}
+								//addLogErr('binBegin'+binBegin)
+								
+								beginReadFile = false;
+								if(clearFiledata.length > 0)
+								{
+									const fromHexString = (hexString)=>Uint8Array.from(hexString.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
+									var decode = new TextDecoder();
+									var stringData = decode.decode(new Uint8Array([...clearFiledata]))
+									let blob = new Blob([fromHexString(stringData)], { type: 'text/plain;charset=utf-8' })
+									saveAs(blob, exportFileName)
+								}else
+								{
+									addLogErr('no file')
+								}
+							}else
+							{
+								addLogErr('文件读取失败')
+							}
+						}
+						console.log(value);
+					}else{
+						dataReceived(value)
+					}
 				}
 			} catch (error) {
 			} finally {
@@ -794,15 +871,15 @@
 
 
 		//写串口数据
-	async function writeFileData(data) {
+	async function writeFileData(data,crcl=true) {
 		if (!serialPort || !serialPort.writable) {
 			addLogErr('请先打开串口再发送数据')
 			return
 		}
 		const writer = serialPort.writable.getWriter()
-		// if (toolOptions.addCRLF) {
-		data = new Uint8Array([...data, 0x0d, 0x0a])
-		// }
+		if (crcl) {
+			data = new Uint8Array([...data, 0x0d, 0x0a])
+		}
 		await writer.write(data)
 		writer.releaseLock()
 		addLog(data, false)
@@ -813,6 +890,7 @@
 	  };
 
 	document.getElementById('choose-file').onchange = e => {
+		beginReadFile = false
 		var file = e.target.files[0];
 		var reader = new FileReader();
 		// reader.readAsText(file, "utf-8");
@@ -849,5 +927,64 @@
 			})();
 		}
 		}
+
+	let exportFileName = ''
+	document.getElementById('get_filename_btn').onclick = function() {
+		exportFileName =  get('get_filename');
+
+
+		(async () => {
+			try {
+
+				// let hexString = '2320546869732066696c65206973206578656375746564206f6e20657665727920626f6f742028696e636c7564696e672077616b652d626f6f742066726f6d2064656570736c656570290a23696d706f7274206573700a236573702e6f736465627567284e6f6e65290a696d706f7274207765627265706c0a7765627265706c2e737461727428290a'
+				// const fromHexString = (hexString)=>Uint8Array.from(hexString.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
+				// var encode = new TextEncoder();
+				// let blob = new Blob([fromHexString(hexString)], { type: 'text/plain;charset=utf-8' })
+				// 					saveAs(blob, "filename111.txt")
+				beginReadFile = true
+				readFileData = []
+				await writeFileData(new Uint8Array([0x0d, 0x03])) // Ctrl+C 退出程序
+				var encode = new TextEncoder();
+				await writeFileData(encode.encode("import sys"));
+				await delay(300)
+				await writeFileData(encode.encode("import ubinascii"));
+				await delay(300)
+				await writeFileData(encode.encode("_infile = open('"+exportFileName+"', 'rb')"));
+				await delay(300)
+				await writeFileData(encode.encode("while True:"))
+				await delay(300)
+				//await writeFileData(encode.encode("break"))
+				await writeFileData(encode.encode("filedata =_infile.read(30)",false))
+				await delay(300)
+				await writeFileData(encode.encode("if not filedata:"),false)
+				await delay(300)
+				await writeFileData(encode.encode("break"))
+				await delay(300)
+				await writeFileData(encode.encode("print(ubinascii.hexlify(filedata))"));
+				// await delay(300)
+				// await writeFileData(encode.encode("break"))
+				await delay(300)
+				await writeFileData(new Uint8Array([ 0x0d, 0x0a]))
+				await delay(300)
+				await writeFileData(new Uint8Array([ 0x0d, 0x0a]))
+				await delay(300)
+				await writeFileData(encode.encode("print('end')"));
+			} catch (error) {
+				console.error("read file error"+error)
+				beginReadFile = false
+			}finally{
+				
+			}
+		})();
+
+		// cmd = "import sys"
+		// import ubinascii
+		// with open('{0}', 'rb') as infile:
+		// while True:
+		// 		result = infile.read({1})
+		// 		if result == b'':
+		// 			break
+		// 		len = sys.stdout.write(ubinascii.hexlify(result))"
+	}
 
 })()
