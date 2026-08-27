@@ -1,0 +1,30 @@
+# git-replace.txt - regex rules applied to every line of git's stdout/stderr
+# Format: <regex pattern> <replacement>
+# The FIRST space separates the pattern from the replacement.
+# Lines starting with '#' are comments. Blank lines are ignored.
+#
+# The pattern is an ECMAScript regex. The replacement is a literal string
+# (you may use $1, $2, ... to reference capture groups, and $& for the
+# whole match).
+
+# Hide the corporate email returned by `git config user.email`
+#liou@300624\.cn someone@example.com
+xxx@xx\.com liou@300624.cn
+alex liou
+
+# ---- HTTP URL replacement examples ----
+# NOTE: the FIRST space separates pattern from replacement.
+# The replacement is a literal string; use $1/$2/$& for capture groups.
+
+# Example 1: replace the whole http(s) URL with fixed text
+# https?://\S+ [hidden-url]
+https?://\S+ http://git.wondershare.cn/MGStudio/DrFoneAppforAndroid_Transfer.git
+
+# Example 2: replace only the host, keep the path (capture group $1)
+# https?://[^/]+(/.*)?$ https://internal.example.com$1
+
+# Example 3: replace the host in `git remote -v` (keep protocol + path)
+# https?://[^/]+/ https://git.internal.example.com/
+
+# Example 4: collapse the whole URL to "host/path"
+# https?://([^/]+)(/.*)?$ $1$2
