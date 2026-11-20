@@ -1,0 +1,1 @@
+function e(e){!e||typeof document>`u`||(e.querySelectorAll(`.landing-hero-step`).forEach(e=>{e.style.opacity=`1`,e.style.transform=`none`,e.style.filter=`none`}),e instanceof HTMLElement&&(e.dataset.heroRevealed=`1`))}export{e as t};

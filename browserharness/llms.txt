@@ -1,0 +1,39 @@
+# WebHarness
+
+> WebHarness is a browser-owned, open-source AI workspace for bring-your-own-key (BYOK) chat.
+
+## Canonical site
+
+- https://tryaidiy.com/
+- Workspace: https://tryaidiy.com/workspace
+- Source code: https://github.com/Cubinghackerz/ai.diy
+- Privacy: https://tryaidiy.com/privacy
+- Terms: https://tryaidiy.com/terms
+
+## Product guides
+
+- Self-hosted AI: https://tryaidiy.com/self-hosted-ai
+- Local AI with Ollama and LM Studio: https://tryaidiy.com/local-ai
+- MCP tools: https://tryaidiy.com/mcp
+- AI agents and subagents: https://tryaidiy.com/agents
+- Multi-model Preview: https://tryaidiy.com/multi-model
+
+## Product summary
+
+Users connect their own cloud or local AI providers and keep chats, files, Canvas artifacts, memory, knowledge-base chunks, usage events, and preview sessions in browser storage. Provider keys are stored in the browser and relayed per request. When supported, settings are encrypted at rest with AES-GCM; fallback environments may use plaintext storage. The Node server does not need persistent provider credentials, but it can observe relayed traffic and enabled tools can contact their own services.
+
+## Supported providers
+
+20+ integrations including OpenAI, ChatGPT subscription, Anthropic, Google Gemini, Groq, Cerebras, Fireworks, Perplexity, Cohere, OpenRouter, DeepSeek, xAI, Ollama, Mistral, Hugging Face, Amazon Bedrock, Azure, Vertex, Vercel Gateway, Together, LM Studio, and custom OpenAI-compatible endpoints.
+
+## Capabilities
+
+- Streaming AI chat, reasoning controls, files, image and video generation models
+- Web search, URL fetch, calculator, browser Python, memory, on-device knowledge search, MCP, skills, and approved subagents
+- Canvas previews for HTML, code, images, and generated files
+- Client-side import, export, and optional S3, WebDAV, or Google Drive backup
+- Node.js, Docker Compose, or Vercel preview deployment
+
+## Important boundaries
+
+WebHarness does not provide model credits or replace an AI provider. Provider costs, quotas, availability, and data policies remain controlled by each provider. Web search, URL fetch, MCP, connectors, backups, and ChatGPT subscription login have additional service or session boundaries. A hosted instance operator can observe request traffic in transit; self-host for infrastructure control. The source is MIT licensed.
