@@ -1,50 +1,10 @@
-function corsRule(tabId) {
-  return {
-    id: tabId,
-    priority: 1,
-    action: {
-      type: "modifyHeaders",
-      responseHeaders: [
-        { header: "access-control-allow-origin", operation: "set", value: "*" },
-        {
-          header: "access-control-allow-methods",
-          operation: "set",
-          value: "GET, POST, PUT, PATCH, DELETE, OPTIONS",
-        },
-        { header: "access-control-allow-headers", operation: "set", value: "*" },
-        { header: "access-control-expose-headers", operation: "set", value: "*" },
-      ],
-    },
-    condition: {
-      urlFilter: "*",
-      resourceTypes: ["xmlhttprequest"],
-      tabIds: [tabId],
-    },
-  };
-}
-
-function allowTab(tabId) {
-  if (!tabId) return Promise.resolve();
-  return chrome.declarativeNetRequest.updateSessionRules({
-    removeRuleIds: [tabId],
-    addRules: [corsRule(tabId)],
-  });
-}
-
-chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg?.type !== "allow-cors") return;
-  const tabId = sender.tab?.id;
-  allowTab(tabId).then(
-    () => sendResponse({ ok: true }),
-    (error) => sendResponse({ ok: false, error: String(error) }),
-  );
-  return true;
-});
-
-chrome.tabs.onRemoved.addListener((tabId) => {
-  chrome.declarativeNetRequest
-    .updateSessionRules({ removeRuleIds: [tabId] })
-    .catch(() => undefined);
+  // Do not touch declarativeNetRequest. Asking Chrome to evaluate header
+  // rules makes it wait for this worker before every request, so a stalled
+  // worker leaves the tab spinner on forever. Header rewriting also breaks
+  // CheerpX (COEP treats the modified wasm/script as a failed worker init).
+  sendResponse({ ok: true });
 });
 
 function keepPortAlive(port) {
